@@ -25,11 +25,11 @@ func TestRedisGatewayTestSuite(t *testing.T) {
 func (redisGatewayTestSuite *RedisGatewayTestSuite) SetupTest() {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: "", // password
+		DB:       0,  // namespace
 	})
 	ctx := context.Background()
-	redisClient.FlushAll(ctx)
+	redisClient.FlushAll(ctx) // 실제 상태를 테스트하므로 flush를 해줍니다.
 	redisGatewayTestSuite.redisGateway = RedisGateway{}.New(redisClient, ctx, time.Second*100)
 }
 
@@ -38,6 +38,7 @@ func (redisGatewayTestSuite *RedisGatewayTestSuite) TestRedisGatewayNew() {
 	assert.NotNil(redisGatewayTestSuite.T(), redisGatewayTestSuite.redisGateway)
 }
 
+// set과 get 확인
 func (redisGatewayTestSuite *RedisGatewayTestSuite) TestRedisGatewaySetAndGet() {
 	key := "hello"
 	value := "world"
@@ -48,6 +49,7 @@ func (redisGatewayTestSuite *RedisGatewayTestSuite) TestRedisGatewaySetAndGet() 
 	assert.Equal(redisGatewayTestSuite.T(), value, data)
 }
 
+// key list 테스트
 func (redisGatewayTestSuite *RedisGatewayTestSuite) TestRedisGatewayGetKeyList() {
 	cnt := 15
 	for i := 0; i < cnt; i++ {
@@ -57,5 +59,4 @@ func (redisGatewayTestSuite *RedisGatewayTestSuite) TestRedisGatewayGetKeyList()
 	res, err := redisGatewayTestSuite.redisGateway.GetKeyList()
 	assert.NoError(redisGatewayTestSuite.T(), err)
 	assert.Equal(redisGatewayTestSuite.T(), cnt, len(res))
-
 }

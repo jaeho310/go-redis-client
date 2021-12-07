@@ -9,10 +9,10 @@ import (
 )
 
 func main() {
-	ExampleClient()
+	example()
 }
 
-func ExampleClient() {
+func example() {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // password
