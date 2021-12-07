@@ -72,3 +72,15 @@ func (redisGatewayTestSuite *MockRedisGatewayTestSuite) TestRedisGatewayGetWithE
 	_, err := redisGatewayTestSuite.redisGateway.GetData(key)
 	assert.EqualError(redisGatewayTestSuite.T(), err, "FAIL")
 }
+
+// redis scan 테스트
+func (redisGatewayTestSuite *MockRedisGatewayTestSuite) TestGetKeyList() {
+	var mockResult []string
+	mockResult = append(mockResult, "a")
+	mockResult = append(mockResult, "b")
+	redisGatewayTestSuite.mock.ExpectScan(0, "*", 10).SetVal(mockResult, 0)
+	list, err := redisGatewayTestSuite.redisGateway.GetKeyList()
+	assert.NoError(redisGatewayTestSuite.T(), err)
+	assert.EqualValues(redisGatewayTestSuite.T(), mockResult, list)
+
+}

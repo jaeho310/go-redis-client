@@ -15,10 +15,10 @@ func main() {
 func ExampleClient() {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: "", // password
+		DB:       0,  // namespace
 	})
-	redisGateway := repository.RedisGateway{}.New(redisClient, context.Background(), time.Second*100)
+	redisGateway := repository.RedisGateway{}.New(redisClient, context.Background(), time.Second*5)
 	err := redisGateway.SetData("hello", "world")
 	if err != nil {
 		panic(err)
@@ -28,4 +28,9 @@ func ExampleClient() {
 		panic(err)
 	}
 	fmt.Println(data)
+	list, err := redisGateway.GetKeyList()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(list)
 }

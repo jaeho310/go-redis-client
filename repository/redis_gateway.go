@@ -21,6 +21,7 @@ func (redisGateway *RedisGateway) SetData(key string, value string) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -30,4 +31,25 @@ func (redisGateway *RedisGateway) GetData(key string) (string, error) {
 		return "", err
 	}
 	return result, nil
+}
+
+// redis는 하나의 스레드를 갖기에 keys라는 명령어는 금기시 되어있습니다.
+// scan을 이용하여 가져옵니다.
+func (redisGateway *RedisGateway) GetKeyList() ([]string, error) {
+	var cursor uint64
+	var keyList []string
+	for {
+		var keys []string
+		var err error
+		keys, cursor, err = redisGateway.client.Scan(redisGateway.ctx, cursor, "*", 10).Result()
+		if err != nil {
+			return nil, err
+		}
+		for _, el := range keys {
+			keyList = append(keyList, el)
+		}
+		if cursor == 0 {
+			return keyList, nil
+		}
+	}
 }
