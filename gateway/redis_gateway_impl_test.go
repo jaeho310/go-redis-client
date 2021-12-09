@@ -1,4 +1,4 @@
-package repository
+package gateway
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 
 type RedisGatewayTestSuite struct {
 	suite.Suite
-	redisGateway *RedisGateway
+	redisGateway *RedisGatewayImpl
 }
 
 // suite.Run()이 SetUpTest()를 실행시킵니다.
@@ -30,7 +30,7 @@ func (redisGatewayTestSuite *RedisGatewayTestSuite) SetupTest() {
 	})
 	ctx := context.Background()
 	redisClient.FlushAll(ctx) // 실제 상태를 테스트하므로 flush를 해줍니다.
-	redisGatewayTestSuite.redisGateway = RedisGateway{}.New(redisClient, ctx, time.Second*100)
+	redisGatewayTestSuite.redisGateway = RedisGatewayImpl{}.New(redisClient, time.Second*100)
 }
 
 // 생성 확인

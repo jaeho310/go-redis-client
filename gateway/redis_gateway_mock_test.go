@@ -1,7 +1,6 @@
-package repository
+package gateway
 
 import (
-	"context"
 	"errors"
 	"github.com/go-redis/redismock/v8"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +11,7 @@ import (
 
 type MockRedisGatewayTestSuite struct {
 	suite.Suite
-	redisGateway *RedisGateway
+	redisGateway *RedisGatewayImpl
 	mock         redismock.ClientMock
 	expireTime   time.Duration
 }
@@ -27,7 +26,7 @@ func TestMockRedisGatewayTestSuite(t *testing.T) {
 func (redisGatewayTestSuite *MockRedisGatewayTestSuite) SetupTest() {
 	client, mock := redismock.NewClientMock()
 	redisGatewayTestSuite.expireTime = time.Second * 100
-	redisGatewayTestSuite.redisGateway = RedisGateway{}.New(client, context.Background(), redisGatewayTestSuite.expireTime)
+	redisGatewayTestSuite.redisGateway = RedisGatewayImpl{}.New(client, redisGatewayTestSuite.expireTime)
 	redisGatewayTestSuite.mock = mock
 }
 

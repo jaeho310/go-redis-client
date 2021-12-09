@@ -1,36 +1,40 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
-	"redis-tut/repository"
+	"redis-tut/gateway"
+	"redis-tut/service"
 	"time"
 )
 
 func main() {
-	example()
+	fooService := getFooService(getRedisGateWay())
+	err := fooService.SetData("hello", "world")
+	if err != nil {
+		panic(err)
+	}
+	data, err := fooService.GetData("hello")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(data)
+	list, err := fooService.GetKeyList()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(list)
 }
 
-func example() {
+func getRedisGateWay() *gateway.RedisGatewayImpl {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // password
 		DB:       0,  // namespace
 	})
-	redisGateway := repository.RedisGateway{}.New(redisClient, context.Background(), time.Second*5)
-	err := redisGateway.SetData("hello", "world")
-	if err != nil {
-		panic(err)
-	}
-	data, err := redisGateway.GetData("hello")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(data)
-	list, err := redisGateway.GetKeyList()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(list)
+	return gateway.RedisGatewayImpl{}.New(redisClient, time.Second*5)
+}
+
+func getFooService(redisGatewayImpl *gateway.RedisGatewayImpl) *service.FooService {
+	return service.FooService{}.New(redisGatewayImpl)
 }
