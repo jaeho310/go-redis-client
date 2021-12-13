@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// 실제로 테스트할 구현체와 suite.Suite를 담는 struct를 만들어줍니다.
 type RedisGatewayTestSuite struct {
 	suite.Suite
 	redisGateway *RedisGatewayImpl
@@ -20,7 +21,8 @@ func TestRedisGatewayTestSuite(t *testing.T) {
 	suite.Run(t, new(RedisGatewayTestSuite))
 }
 
-// 테스트에서 공통으로 해야하는 행위들을 구조체에 넣어줍니다.
+// 모든 함수마다 RedisGatewayImpl을 구축할 수는 없습니다.
+// 테스트에서 공통으로 해야하는 행위들을 넣어줍니다.
 // junit의 @beforeEach와 비슷한 기능입니다.
 func (redisGatewayTestSuite *RedisGatewayTestSuite) SetupTest() {
 	redisClient := redis.NewClient(&redis.Options{
